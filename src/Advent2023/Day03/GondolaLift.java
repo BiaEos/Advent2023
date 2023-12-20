@@ -45,7 +45,7 @@ public class GondolaLift {
     }
 
     /**
-     * Takes the input from created in the LoadFile class and turns it into a
+     * Takes the input created in the LoadFile class and turns it into a
      * 2d array storing the values. Calls the methods to collect the symbol
      * locations and the star locations into additional 2d arrays.
      */
@@ -78,7 +78,7 @@ public class GondolaLift {
 
     /**
      * Creates a 2d array of booleans that have a value of true if the index
-     * being checked contains a '*' symbol.
+     * being checked contains a "*" symbol.
      * @param row the current row to check
      * @param col the current index to check
      */
