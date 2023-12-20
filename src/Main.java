@@ -11,6 +11,7 @@ import java.util.Scanner;
 
 import static Advent2023.Day01.Day01.day01;
 import static Advent2023.Day02.Day02.day02;
+import static Advent2023.Day03.Day03.day03;
 
 public class Main {
 
@@ -37,7 +38,8 @@ public class Main {
         switch (answer) {
             case 1 -> day01();
             case 2 -> day02();
-            case 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25 ->
+            case 3 -> day03();
+            case 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25 ->
                     System.out.println("This day is not yet created");
             default -> System.out.println("Please enter a valid day number.");
         }
