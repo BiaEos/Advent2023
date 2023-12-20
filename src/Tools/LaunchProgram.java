@@ -13,28 +13,16 @@ public class LaunchProgram {
         if (answer.equalsIgnoreCase(optionOne)) {
             try {
                 myClass.getDeclaredMethod(methodOneName).invoke(null);
-            } catch (NoSuchMethodException e) {
-                System.out.println("No such method exception thrown from day one, " +
-                        "check the start method in your day's named class.");
-            } catch (InvocationTargetException e) {
-                System.out.println("Invocation target exception thrown from day one, " +
-                        "check the start method in your day's named class.");
-            } catch (IllegalAccessException e) {
-                System.out.println("Illegal access exception thrown from day one, " +
-                        "check the start method in your day's named class.");
+            } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+                System.out.println("Please check part one.");
+                e.printStackTrace();
             }
         } else if (answer.equalsIgnoreCase(optionTwo)) {
             try {
                 myClass.getDeclaredMethod(methodTwoName).invoke(null);
-            } catch (NoSuchMethodException e) {
-                System.out.println("No such method exception thrown from day two, " +
-                        "check the start method in your day's named class.");
-            } catch (InvocationTargetException e) {
-                System.out.println("Invocation target exception thrown from day two, " +
-                        "check the start method in your day's named class.");
-            } catch (IllegalAccessException e) {
-                System.out.println("Illegal access exception thrown from day two, " +
-                        "check the start method in your day's named class.");
+            } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+                System.out.println("Please check part two.");
+                e.printStackTrace();
             }
         } else if (answer.equalsIgnoreCase("Exit")) {
             System.exit(0);
