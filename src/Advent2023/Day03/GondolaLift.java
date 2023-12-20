@@ -49,7 +49,7 @@ public class GondolaLift {
      * 2d array storing the values. Calls the methods to collect the symbol
      * locations and the star locations into additional 2d arrays.
      */
-    public void convertInputTo2DArrayAndSaveValidLocations() {
+    private void convertInputTo2DArrayAndSaveValidLocations() {
         int rowLength = input.size();
         int colLength = input.get(0).length();
 
@@ -72,7 +72,7 @@ public class GondolaLift {
      * @param row the current row to check
      * @param col the current column to check
      */
-    public void collectSymbolLocations(int row, int col) {
+    private void collectSymbolLocations(int row, int col) {
         symbolLocations[row][col] = isValidSymbol(row, col);
     }
 
@@ -186,10 +186,8 @@ public class GondolaLift {
         // Possible max length of 3-digit part number given this specific input
         if (col > 1 && isValidNumber(row, col - 2) && isValidNumber(row, col - 1)) {
             startingColumn = col - 2;
-            col = col - 2;
         } else if (col > 0 && isValidNumber(row, col - 1)) {
             startingColumn = col - 1;
-            col = col - 1;
         }
         return startingColumn;
     }
