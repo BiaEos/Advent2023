@@ -11,8 +11,8 @@ public class GondolaLift {
     private static String[][] engineSchematic;
     private Boolean[][] symbolLocations;
     private Boolean[][] starLocations;
-    private static int resultingSum = 0;
-    private static int gearRatio = 0;
+    private static int sumOfPartNumbers = 0;
+    private static int sumOfGearRatios = 0;
 
 
 
@@ -25,25 +25,27 @@ public class GondolaLift {
         GondolaLift gondolaLift = new GondolaLift();
         gondolaLift.convertInputTo2DArrayAndSaveValidLocations();
         gondolaLift.checkNeighbors();
-        System.out.println("The answer for part one is : " + resultingSum);
+        System.out.println("The answer for part one is : " + sumOfPartNumbers);
     }
 
     public static void startDayTwo() {
         GondolaLift gondolaLift = new GondolaLift();
         gondolaLift.convertInputTo2DArrayAndSaveValidLocations();
         gondolaLift.checkNeighbors();
-        System.out.println("The answer for part two is : " + gearRatio);
+        System.out.println("The answer for part two is : " + sumOfGearRatios);
     }
 
     public void convertInputTo2DArrayAndSaveValidLocations() {
-        engineSchematic = new String[input.size()][input.get(0).length()];
-        symbolLocations = new Boolean[engineSchematic.length][engineSchematic[0].length];
-        starLocations = new Boolean[engineSchematic.length][engineSchematic[0].length];
-        for (int row = 0; row < engineSchematic.length; row++) {
-            for (int col = 0; col < engineSchematic[0].length; col++) {
+        int rowLength = input.size();
+        int colLength = input.get(0).length();
+
+        engineSchematic = new String[rowLength][colLength];
+        symbolLocations = new Boolean[rowLength][colLength];
+        starLocations = new Boolean[rowLength][colLength];
+
+        for (int row = 0; row < rowLength; row++) {
+            for (int col = 0; col < colLength; col++) {
                 engineSchematic[row][col] = input.get(row).substring(col, col + 1);
-                symbolLocations[row][col] = false;
-                starLocations[row][col] = false;
                 collectSymbolLocations(row, col);
                 collectStarLocations(row, col);
             }
@@ -51,64 +53,12 @@ public class GondolaLift {
     }
 
     public void collectSymbolLocations(int row, int col) {
-        //String currentCell = inputFromFile2DArray[row][col];
-        if (isValidSymbol(row, col)) {
-            //System.out.println(currentCell);
-            symbolLocations[row][col] = true;
-        }
+        symbolLocations[row][col] = isValidSymbol(row, col);
     }
 
     private void collectStarLocations(int row, int col) {
-        String currentCell = engineSchematic[row][col];
-        if (currentCell.charAt(0) == 42) {
-            System.out.println(currentCell);
-            starLocations[row][col] = true;
-        }
+        starLocations[row][col] = engineSchematic[row][col].charAt(0) == 42;
     }
-
-/*    private void checkNeighbors() {
-        // if the symbol location is true check input2dArray
-        for (int row = 0; row < symbolLocations.length; row++) {
-            for (int col = 0; col < symbolLocations[0].length; col++) {
-                int[] countOfPartNumbers = new int[] {0};
-                List<Integer> resultingNumbers = new ArrayList<>();
-                if(symbolLocations[row][col]) {
-                    // one row up (center, left, right)
-                    if (isValidIndex(row - 1, col - 1) && isValidNumber(row - 1, col - 1)) {
-                        resultingNumbers.add(getPartNumber(row - 1, col - 1, countOfPartNumbers));
-                    }
-                    if (isValidIndex(row - 1, col) && isValidNumber(row - 1, col)) {
-                        resultingNumbers.add(getPartNumber(row - 1, col, countOfPartNumbers));
-                    }
-                    if (isValidIndex(row - 1, col + 1) && isValidNumber(row - 1, col + 1)) {
-                        resultingNumbers.add(getPartNumber(row - 1, col + 1, countOfPartNumbers));
-                    }
-                    // one row down (center, left, right)
-                    if (isValidIndex(row + 1, col - 1) && isValidNumber(row + 1, col - 1)) {
-                        resultingNumbers.add(getPartNumber(row + 1, col - 1, countOfPartNumbers));
-                    }
-                    if (isValidIndex(row + 1, col) && isValidNumber(row + 1, col)) {
-                        resultingNumbers.add(getPartNumber(row + 1, col, countOfPartNumbers));
-                    }
-                    if (isValidIndex(row + 1, col + 1) && isValidNumber(row + 1, col + 1)) {
-                        resultingNumbers.add(getPartNumber(row + 1, col + 1, countOfPartNumbers));
-                    }
-                    // cells to the left
-                    if (isValidIndex(row, col - 1) && isValidNumber(row, col - 1)) {
-                        resultingNumbers.add(getPartNumber(row, col - 1, countOfPartNumbers));
-                    }
-                    // cells to the right
-                    if (isValidIndex(row, col + 1) && isValidNumber(row, col + 1)) {
-                        resultingNumbers.add(getPartNumber(row, col + 1, countOfPartNumbers));
-                    }
-                    if (countOfPartNumbers[0] == 2 && starLocations[row][col]) {
-                        gearRatio += resultingNumbers.get(0) * resultingNumbers.get(1);
-                        System.out.println(resultingNumbers);
-                    }
-                }
-            }
-        }
-    }*/
 
     private void checkNeighbors() {
         int[][] deltas = new int[][] {{-1, -1}, {-1, 0}, {-1, 1},
@@ -119,22 +69,22 @@ public class GondolaLift {
             for (int col = 0; col < symbolLocations[0].length; col++) {
 
                 int[] countOfPartNumbers = new int[]{0};
-                List<Integer> resultingNumbers = new ArrayList<>();
+                List<Integer> partNumbers = new ArrayList<>();
 
                 if (symbolLocations[row][col]) {
-                    for (int i = 0; i < deltas.length; i++) {
-                        int[] coordinates = deltas[i];
-                        int newRow = row + coordinates[0];
-                        int newCol = col + coordinates[1];
+                    for (int[] delta : deltas) {
+                        int newRow = row + delta[0];
+                        int newCol = col + delta[1];
 
                         if (isValidIndex(newRow, newCol) && isValidNumber(newRow, newCol)) {
-                            resultingNumbers.add(getPartNumber(newRow, newCol, countOfPartNumbers));
+                            partNumbers.add(calculateSumOfParts(newRow, newCol, countOfPartNumbers));
                         }
                     }
 
+                    // check if there are exactly 2 parts connected to the star for
+                    // valid gear ratio computation
                     if (countOfPartNumbers[0] == 2 && starLocations[row][col]) {
-                        gearRatio += resultingNumbers.get(0) * resultingNumbers.get(1);
-                        System.out.println(resultingNumbers);
+                        sumOfGearRatios += partNumbers.get(0) * partNumbers.get(1);
                     }
                 }
             }
@@ -146,20 +96,34 @@ public class GondolaLift {
     }
 
     private boolean isValidNumber(int row, int col) {
-        String currentCell = engineSchematic[row][col];
-        return Character.isDigit(currentCell.charAt(0));
+        return Character.isDigit(engineSchematic[row][col].charAt(0));
     }
 
     private boolean isValidSymbol(int row, int col) {
-        String currentCell = engineSchematic[row][col];
-        return currentCell.charAt(0) != '.' && !isValidNumber(row, col);
+        return engineSchematic[row][col].charAt(0) != '.' && !isValidNumber(row, col);
     }
 
-    private int getPartNumber(int row, int col, int[] countOfPartNumbers) {
+    private int calculateSumOfParts(int row, int col, int[] countOfPartNumbers) {
+        int startingColumn = getStartingColumn(row, col);
+        int endingColumn = getEndingColumn(row, col);
+        int lengthOfNumber = endingColumn - startingColumn;
+        int partNumber = getPartNumber(row, startingColumn, lengthOfNumber);
+
+        clearProcessedPartNumbers(row, startingColumn, lengthOfNumber);
+        sumOfPartNumbers += partNumber;
+        countOfPartNumbers[0] = countOfPartNumbers[0] + 1;
+        return partNumber;
+    }
+
+    private void clearProcessedPartNumbers(int row, int startingColumn, int lengthOfNumber) {
+        for (int i = 0; i <= lengthOfNumber; i++) {
+            engineSchematic[row][startingColumn + i] = ".";
+        }
+    }
+
+    private int getStartingColumn(int row, int col) {
         int startingColumn = col;
-        int endingColumn = col;
-        int resultingNumber = 0;
-        // check for start of possible 3-digit number and set as starting index to check later for size of number
+        // Possible max length of 3-digit part number given this specific input
         if (col > 1 && isValidNumber(row, col - 2) && isValidNumber(row, col - 1)) {
             startingColumn = col - 2;
             col = col - 2;
@@ -167,32 +131,30 @@ public class GondolaLift {
             startingColumn = col - 1;
             col = col - 1;
         }
+        return startingColumn;
+    }
 
-        // get the ending index to figure out what length of number to store
+    private int getEndingColumn(int row, int col) {
+        int endingColumn = 0;
         while (col < engineSchematic[0].length && Character.isDigit(input.get(row).charAt(col))) {
             endingColumn = col;
             col++;
         }
-        if (endingColumn - startingColumn == 2) {
-            resultingNumber = 100 * Integer.valueOf(engineSchematic[row][startingColumn]);
-            engineSchematic[row][startingColumn] = ".";
-            resultingNumber += 10 * Integer.valueOf(engineSchematic[row][startingColumn + 1]);
-            engineSchematic[row][startingColumn + 1] = ".";
-            resultingNumber += Integer.valueOf(engineSchematic[row][startingColumn + 2]);
-            engineSchematic[row][startingColumn + 2] = ".";
-        } else if (endingColumn - startingColumn == 1) {
-            resultingNumber += 10 * Integer.valueOf(engineSchematic[row][startingColumn]);
-            engineSchematic[row][startingColumn] = ".";
-            resultingNumber += Integer.valueOf(engineSchematic[row][startingColumn + 1]);
-            engineSchematic[row][startingColumn + 1] = ".";
-        } else if (endingColumn == startingColumn) {
-            resultingNumber += Integer.valueOf(engineSchematic[row][startingColumn]);
-            engineSchematic[row][startingColumn] = ".";
-        }
+        return endingColumn;
+    }
 
-        System.out.println("This number is : " + resultingNumber);
-        resultingSum += resultingNumber;
-        countOfPartNumbers[0] = countOfPartNumbers[0] + 1;
-        return resultingNumber;
+    private int getPartNumber(int row, int startingColumn, int lengthOfNumber) {
+        int partNumber = 0;
+        if (lengthOfNumber == 2) {
+            partNumber = 100 * Integer.parseInt(engineSchematic[row][startingColumn]);
+            partNumber += 10 * Integer.parseInt(engineSchematic[row][startingColumn + 1]);
+            partNumber += Integer.parseInt(engineSchematic[row][startingColumn + 2]);
+        } else if (lengthOfNumber == 1) {
+            partNumber += 10 * Integer.parseInt(engineSchematic[row][startingColumn]);
+            partNumber += Integer.parseInt(engineSchematic[row][startingColumn + 1]);
+        } else if (lengthOfNumber == 0) {
+            partNumber += Integer.parseInt(engineSchematic[row][startingColumn]);
+        }
+        return partNumber;
     }
 }
