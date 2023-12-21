@@ -13,6 +13,7 @@ import static Advent2023.Day01.Day01.day01;
 import static Advent2023.Day02.Day02.day02;
 import static Advent2023.Day03.Day03.day03;
 import static Advent2023.Day04.Day04.day04;
+import static Advent2023.Day05.Day05.day05;
 
 public class Main {
 
@@ -41,7 +42,8 @@ public class Main {
             case 2 -> day02();
             case 3 -> day03();
             case 4 -> day04();
-            case 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25 ->
+            case 5 -> day05();
+            case 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25 ->
                     System.out.println("This day is not yet created");
             default -> System.out.println("Please enter a valid day number.");
         }
