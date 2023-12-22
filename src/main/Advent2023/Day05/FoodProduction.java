@@ -11,7 +11,6 @@ public class FoodProduction {
 
     static final List<String> input = new ArrayList<>(LoadFile.inputFromFile());
     final Map<Long, Seed> seeds = new HashMap<>();
-    final List<String> parsedInput = new ArrayList<>();
     SourceToDestination seedToSoil = new SourceToDestination();
     SourceToDestination soilToFertilizer = new SourceToDestination();
     SourceToDestination fertilizerToWater = new SourceToDestination();
@@ -39,7 +38,7 @@ public class FoodProduction {
         input.removeIf(str -> str.equals(""));
         //System.out.println(input);
         foodProduction.parseInput();
-        foodProduction.getSeedLocation();
+        foodProduction.getSpecificSeedInfo();
         Collections.sort(locations);
         System.out.println("The answer for part one is : " + locations.get(0));
     }
@@ -53,7 +52,6 @@ public class FoodProduction {
     }
 
     private void parseInput() {
-        /*final Pattern seedIdsPattern = Pattern.compile("[A-Za-z]+:\\s");*/
         final Pattern seedIdsPattern = Pattern
                 .compile("[A-Za-z0-9]+:(\s+([0-9]+\s+)+)[0-9]+");
         final Pattern typeToMapPattern = Pattern
@@ -127,26 +125,71 @@ public class FoodProduction {
         return Arrays.stream(input.get(line).split(" ")).toList();
     }
 
-    private void getSeedLocation() {
-        for (Map.Entry<Long, Seed> seed : seeds.entrySet()) {
-            //System.out.println("Final seed : " + seed);
-            long soil = seedToSoil.calculateDestination(seed.getKey());
-            System.out.println("Soil = " + soil);
-            //System.out.println("Final soil : " + soil);
-            long fertilizer = soilToFertilizer.calculateDestination(soil);
-            //System.out.println("Final fertilizer : " + fertilizer);
-            long water = fertilizerToWater.calculateDestination(fertilizer);
-            //System.out.println("Final water : " + water);
-            long light = waterToLight.calculateDestination(water);
-            //System.out.println("Final light : " + light);
-            long temperature = lightToTemperature.calculateDestination(light);
-            //System.out.println("Final temperature : " + temperature);
-            long humidity = temperatureToHumidity.calculateDestination(temperature);
-            //System.out.println("Final humidity : " + humidity);
-            long location = humidityToLocation.calculateDestination(humidity);
-            //System.out.println("Final Location : " + location);
-            locations.add(location);
+    private void getSpecificSeedInfo() {
+        for (Seed seed : seeds.values()) {
+            getSeedLocation(seed);
         }
     }
 
+    private void getSeedLocation(Seed seed) {
+        getSoilForSeed(seed);
+        getFertilizerForSoil(seed);
+        getWaterForFertilizer(seed);
+        getLightForWater(seed);
+        getTemperatureForLight(seed);
+        getHumidityForTemperature(seed);
+        getLocationForHumidity(seed);
+    }
+
+    private void getSoilForSeed(Seed seed) {
+        //System.out.println("Final seed : " + seed);
+        seeds.get(seed.getSeedId()).setSoilId(seedToSoil.calculateDestination(seed.getSeedId()));
+    }
+
+    private void getFertilizerForSoil(Seed seed) {
+        //System.out.println("Final soil : " + soil);
+        seeds.get(seed.getSeedId()).setFertilizerId(soilToFertilizer.calculateDestination(seed.getSoilId()));
+    }
+
+    private void getWaterForFertilizer(Seed seed) {
+        //System.out.println("Final fertilizer : " + fertilizer);
+        seeds.get(seed.getSeedId()).setWaterId(fertilizerToWater.calculateDestination(seed.getFertilizerId()));
+    }
+
+    private void getLightForWater(Seed seed) {
+        //System.out.println("Final water : " + water);
+        seeds.get(seed.getSeedId()).setLightId(waterToLight.calculateDestination(seed.getWaterId()));
+    }
+
+    private void getTemperatureForLight(Seed seed) {
+        //System.out.println("Final light : " + light);
+        seeds.get(seed.getSeedId()).setTemperatureId(lightToTemperature.calculateDestination(seed.getLightId()));
+    }
+
+    private void getHumidityForTemperature(Seed seed) {
+        //System.out.println("Final temperature : " + temperature);
+        seeds.get(seed.getSeedId()).setHumidityId(temperatureToHumidity.calculateDestination(seed.getTemperatureId()));
+    }
+
+    private void getLocationForHumidity(Seed seed) {
+            //System.out.println("Final humidity : " + humidity);
+            seeds.get(seed.getSeedId()).setLocationId(humidityToLocation.calculateDestination(seed.getHumidityId()));
+            //System.out.println("Final Location : " + location);
+            locations.add(seed.getLocationId());
+    }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
