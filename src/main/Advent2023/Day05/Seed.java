@@ -10,6 +10,7 @@ public class Seed {
     private long temperatureId;
     private long humidityId;
     private long locationId;
+    private long endingRange;
 
     public Seed(long seedId) {
         this.seedId = seedId;
@@ -84,5 +85,18 @@ public class Seed {
 
     public void setLocationId(long locationId) {
         this.locationId = locationId;
+    }
+
+    public void setRange(long endingRange) {
+        this.endingRange = endingRange;
+    }
+
+    public long getEndingRange() {
+        return endingRange;
+    }
+
+    @Override
+    public String toString() {
+        return String.valueOf(seedId);
     }
 }
