@@ -10,10 +10,10 @@ import java.util.List;
 public class BoatRace {
 
     private static final List<String> input = new ArrayList<>(LoadFile.inputFromFile());
-    private final List<Integer> timeForRace = new ArrayList<>();
-    private final List<Integer> distanceForRace = new ArrayList<>();
-    private static int productOfWaysToWin = 1;
-    private int waysToWinForRace = 0;
+    private final List<Long> timeForRace = new ArrayList<>();
+    private final List<Long> distanceForRace = new ArrayList<>();
+    private static long productOfWaysToWin = 1;
+    private long waysToWinForRace = 0;
 
     /**
      * Launches the options in the console for which part the user wants to get the
@@ -40,20 +40,34 @@ public class BoatRace {
      */
     public static void startDayTwo() {
         BoatRace boatRace = new BoatRace();
-
+        boatRace.parseTimeForLongRace();
+        boatRace.parseDistanceForLongRace();
+        long waysToWin = boatRace.runSingleRace(0);
+        System.out.println("The solution for part two is : " + waysToWin);
     }
+    // 71503 too low
 
     /**
      * Separates the individual time for the races that will be run and stores them
      * in the List of Integer timeForRace.
      */
     private void parseTimeForRace() {
-        List<Integer> time = Arrays.stream(input.get(0).split(" "))
+        List<Long> time = Arrays.stream(input.get(0).split(" "))
                 .filter(entry -> !entry.matches(""))
                 .filter(entry -> !entry.contains(":"))
-                .map(Integer::parseInt)
+                .map(Long::parseLong)
                 .toList();
         timeForRace.addAll(time);
+    }
+
+    /**
+     * Parses the input for one long race, combining the values that were
+     * separate races in part one.
+     */
+    private void parseTimeForLongRace() {
+        timeForRace.add(Long.parseLong(input.get(0)
+                .replaceAll("[a-zA-Z]+:\\s+", "")
+                .replaceAll("\\s+", "")));
     }
 
     /**
@@ -61,12 +75,22 @@ public class BoatRace {
      * stores them in the List of Integer distanceForRace.
      */
     private void parseDistanceForRace() {
-        List<Integer> distance = Arrays.stream(input.get(1).split(" "))
+        List<Long> distance = Arrays.stream(input.get(1).split(" "))
                 .filter(entry -> !entry.matches(""))
                 .filter(entry -> !entry.contains(":"))
-                .map(Integer::parseInt)
+                .map(Long::parseLong)
                 .toList();
         distanceForRace.addAll(distance);
+    }
+
+    /**
+     * Parses the input for one long race, combining the values that were
+     * separate races in part one.
+     */
+    private void parseDistanceForLongRace() {
+        distanceForRace.add(Long.parseLong(input.get(1)
+                .replaceAll("[a-zA-Z]+:\\s+", "")
+                .replaceAll("\\s+", "")));
     }
 
     /**
@@ -84,14 +108,15 @@ public class BoatRace {
      * solution to part one.
      * @param raceNumber the current iteration of race being run
      */
-    private void runSingleRace(int raceNumber) {
+    private long runSingleRace(int raceNumber) {
         waysToWinForRace = 0;
         for (int i = 0; i < timeForRace.get(raceNumber); i++) {
-            int travelTime = getTravelTime(raceNumber, i);
-            int distanceTraveled = getDistanceTraveled(i, travelTime);
+            long travelTime = getTravelTime(raceNumber, i);
+            long distanceTraveled = getDistanceTraveled(i, travelTime);
             isWinningRecord(raceNumber, distanceTraveled);
         }
         increaseWaysToWinProduct(waysToWinForRace);
+        return waysToWinForRace;
     }
 
     /**
@@ -100,18 +125,18 @@ public class BoatRace {
      * @param holdTime the amount of time the boat is being held
      * @return the travel time the boat has after being held
      */
-    private int getTravelTime(int raceNumber, int holdTime) {
+    private long getTravelTime(int raceNumber, long holdTime) {
         return timeForRace.get(raceNumber) - holdTime;
     }
 
     /**
      * Gets the distance traveled based on the amount of time the boat is held
-     * and the amoutn of time the boat has to travel.
+     * and the amount of time the boat has to travel.
      * @param holdTime the amount of time the boat is being held
      * @param travelTime the amount of time the boat will travel
      * @return the distance the boat will travel
      */
-    private int getDistanceTraveled(int holdTime, int travelTime) {
+    private long getDistanceTraveled(long holdTime, long travelTime) {
         return holdTime * travelTime;
     }
 
@@ -122,7 +147,7 @@ public class BoatRace {
      * @param raceNumber the current iteration of race being run
      * @param distanceTraveled the distance the boat traveled
      */
-    private void isWinningRecord(int raceNumber, int distanceTraveled) {
+    private void isWinningRecord(int raceNumber, long distanceTraveled) {
         if (distanceForRace.get(raceNumber) < distanceTraveled) {
             waysToWinForRace++;
         }
@@ -134,7 +159,7 @@ public class BoatRace {
      * the current race being run.
      * @param waysToWin the current race's ways to win that beat records
      */
-    private void increaseWaysToWinProduct(int waysToWin) {
+    private void increaseWaysToWinProduct(long waysToWin) {
         productOfWaysToWin *= waysToWin;
     }
 }
