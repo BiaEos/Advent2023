@@ -27,6 +27,11 @@ public class Seed {
         this.locationId = locationId;
     }
 
+    public Seed(long seedId, long endingRange) {
+        this.seedId = seedId;
+        this.endingRange = endingRange;
+    }
+
     public long getSeedId() {
         return seedId;
     }

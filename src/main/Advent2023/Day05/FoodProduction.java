@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
 public class FoodProduction {
 
     private static final List<String> input = new ArrayList<>(LoadFile.inputFromFile());
-    private final Map<Long, Seed> seeds = new HashMap<>();
+    static final Map<Long, Seed> seeds = new HashMap<>();
     private final SourceToDestination seedToSoil = new SourceToDestination();
     private final SourceToDestination soilToFertilizer = new SourceToDestination();
     private final SourceToDestination fertilizerToWater = new SourceToDestination();
@@ -22,12 +22,10 @@ public class FoodProduction {
 
     private final Pattern seedIdsPattern = Pattern
             .compile("[A-Za-z0-9]+:(\\s+([0-9]+\\s+)+)[0-9]+");
-
     private final Pattern typeToMapPattern = Pattern
             .compile("([a-z]+(-[a-z]+)+)\\s+[a-z]+:");
-
-    private Matcher seedIdMatcher;
-    private Matcher typeToMapMatcher;
+    private static boolean isPartOne = false;
+    private static boolean isPartTwo = false;
 
     /**
      * Launches the options in the console for which part the user wants to get the
@@ -42,6 +40,7 @@ public class FoodProduction {
      * Entry point to the program for part 1, calls all methods to get the solution.
      */
     public static void startDayOne() {
+        isPartOne = true;
         FoodProduction foodProduction = new FoodProduction();
         input.removeIf(str -> str.equals(""));
         foodProduction.generateSeedsAndMapsFromInput();
@@ -54,35 +53,29 @@ public class FoodProduction {
      * Entry point to the program for part 2, calls all methods to get the solution.
      */
     public static void startDayTwo() {
+        isPartTwo = true;
         FoodProduction foodProduction = new FoodProduction();
         input.removeIf(str -> str.equals(""));
+        foodProduction.generateSeedsAndMapsFromInput();
+
+
 
     }
-
-/*    private void generateSeedsAndMapsFromInput() {
-        for (int line = 0; line < input.size(); line++) {
-            seedIdMatcher = seedIdsPattern.matcher(input.get(line));
-            typeToMapMatcher = typeToMapPattern.matcher(input.get(line));
-            if (seedIdMatcher.find()) {
-                generateSeeds(line);
-            } else if (typeToMapMatcher.find()) {
-                generateMapTo(line);
-            } else {
-                continue;
-            }
-        }
-    }*/
 
     /**
      * Checks the line in the input to determine if it is the beginning
      * of seed id numbers or if it is the beginning of the type of another
      * number that needs to be added to the map storing source and destination.
-     * Stores the values according to what it is.
+     * Stores the values according to what it is. Adds ending range field if
+     * called from part two.
      */
     private void generateSeedsAndMapsFromInput() {
         for (int line = 0; line < input.size(); line++) {
-            if (isSeedIdLine(line)) {
+            if (isSeedIdLine(line) && isPartOne) {
                 generateSeeds(line);
+            }
+            if (isSeedIdLine(line) && isPartTwo) {
+                generateSeedWithEndingRange(line);
             }
             if (isTypeLine(line)) {
                 generateMapTo(line);
@@ -98,7 +91,7 @@ public class FoodProduction {
      * otherwise
      */
     private boolean isSeedIdLine(int line) {
-        seedIdMatcher = seedIdsPattern.matcher(input.get(line));
+        Matcher seedIdMatcher = seedIdsPattern.matcher(input.get(line));
         return seedIdMatcher.find();
     }
 
@@ -111,7 +104,7 @@ public class FoodProduction {
      * than seed id, false otherwise
      */
     private boolean isTypeLine(int line) {
-        typeToMapMatcher = typeToMapPattern.matcher(input.get(line));
+        Matcher typeToMapMatcher = typeToMapPattern.matcher(input.get(line));
         return typeToMapMatcher.find();
     }
 
@@ -143,11 +136,25 @@ public class FoodProduction {
     }
 
     /**
+     * Generates a new seed with ending range field set for part two.
+     * Adds original seed to the seed map.
+     * @param line the line to be evaluated
+     */
+    private void generateSeedWithEndingRange(int line) {
+        List<String> seedList = parseSeeds(line);
+        for (int i = 0; i < seedList.size(); i += 2) {
+            Seed seed = new Seed(Long.parseLong(seedList.get(i)),
+                                 Long.parseLong(seedList.get(i + 1)));
+            seeds.put(seed.getSeedId(), seed);
+        }
+    }
+
+    /**
      * Determines what type of input needs to be stored according to the
      * type of values the line is within. Calls createMaps to store that
      * data in the sourceToDestination map with key source and value as
      * a list of (0) destination and (1) range.
-     * @param line
+     * @param line the line to be evaluated
      */
     private void generateMapTo(int line) {
         final Pattern mapTypePattern = Pattern
@@ -244,7 +251,6 @@ public class FoodProduction {
      * @param seed the seed to be evaluated
      */
     private void getSoilForSeed(Seed seed) {
-        //System.out.println("Final seed : " + seed);
         seeds.get(seed.getSeedId()).setSoilId(
                 seedToSoil.calculateDestination(seed.getSeedId()));
     }
@@ -254,7 +260,6 @@ public class FoodProduction {
      * @param seed the seed to be evaluated
      */
     private void getFertilizerForSoil(Seed seed) {
-        //System.out.println("Final soil : " + soil);
         seeds.get(seed.getSeedId()).setFertilizerId(
                 soilToFertilizer.calculateDestination(seed.getSoilId()));
     }
@@ -264,7 +269,6 @@ public class FoodProduction {
      * @param seed the seed to be evaluated
      */
     private void getWaterForFertilizer(Seed seed) {
-        //System.out.println("Final fertilizer : " + fertilizer);
         seeds.get(seed.getSeedId()).setWaterId(
                 fertilizerToWater.calculateDestination(seed.getFertilizerId()));
     }
@@ -274,7 +278,6 @@ public class FoodProduction {
      * @param seed the seed to be evaluated
      */
     private void getLightForWater(Seed seed) {
-        //System.out.println("Final water : " + water);
         seeds.get(seed.getSeedId()).setLightId(
                 waterToLight.calculateDestination(seed.getWaterId()));
     }
@@ -284,7 +287,6 @@ public class FoodProduction {
      * @param seed the seed to be evaluated
      */
     private void getTemperatureForLight(Seed seed) {
-        //System.out.println("Final light : " + light);
         seeds.get(seed.getSeedId()).setTemperatureId(
                 lightToTemperature.calculateDestination(seed.getLightId()));
     }
@@ -294,7 +296,6 @@ public class FoodProduction {
      * @param seed the seed to be evaluated
      */
     private void getHumidityForTemperature(Seed seed) {
-        //System.out.println("Final temperature : " + temperature);
         seeds.get(seed.getSeedId()).setHumidityId(
                 temperatureToHumidity.calculateDestination(seed.getTemperatureId()));
     }
@@ -305,64 +306,10 @@ public class FoodProduction {
      * @param seed the seed to be evaluated
      */
     private void getLocationForHumidity(Seed seed) {
-        //System.out.println("Final humidity : " + humidity);
         seeds.get(seed.getSeedId()).setLocationId(
                 humidityToLocation.calculateDestination(seed.getHumidityId()));
-        //System.out.println("Final Location : " + location);
         locations.add(seed.getLocationId());
     }
-
-    /*    private void generateSeedWithRange(int line) {
-        List<String> seedList = parseSeeds(line);
-        for (int i = 0; i < seedList.size(); i += 2) {
-            long startingSeed = Long.parseLong(seedList.get(i));
-            long range = Long.parseLong(seedList.get(i + 1));
-            Seed seed = new Seed(startingSeed);
-            seed.setRange(range);
-            seeds.put(startingSeed, seed);
-            //putAllSeedsInMap(seed);
-        }
-    }*/
-
-/*    private void getOriginalSeedLocations() {
-        for (Map.Entry<Long, Seed> seed : seeds.entrySet()) {
-            getSeedLocation(seed.getValue());
-        }
-    }*/
-
-/*    private void getSeedsWithRangeLocations() {
-        for (Map.Entry<Long, Seed> seed : seeds.entrySet()) {
-            long nextSeed = seed.getKey();
-            long range = seed.getKey() + seed.getValue().getEndingRange();
-            for (long i = nextSeed; i < nextSeed + range; i++) {
-                Seed newSeed = new Seed(nextSeed + 1);
-                getSeedLocation(newSeed);
-            }
-        }
-    }*/
-
-/*    private void putAllSeedsInMap(Seed seed) {
-        long seedStart = seed.getSeedId();
-        for (long i = 1; i < seed.getEndingRange(); i++) {
-            Seed newSeed = new Seed(seedStart + i);
-            seeds.put(seedStart + i, newSeed);
-        }
-        //System.out.println("These seeds are in the map : " + seeds);
-    }*/
-
-    /*    private void parseSeedRanges() {
-        for (int line = 0; line < input.size(); line++) {
-            seedIdMatcher = seedIdsPattern.matcher(input.get(line));
-            typeToMapMatcher = typeToMapPattern.matcher(input.get(line));
-            if (seedIdMatcher.find()) {
-                generateSeedWithRange(line);
-            } else if (typeToMapMatcher.find()) {
-                generateMapTo(line);
-            } else {
-                continue;
-            }
-        }
-    }*/
 }
 
 

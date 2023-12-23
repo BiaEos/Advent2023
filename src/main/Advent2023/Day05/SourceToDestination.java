@@ -2,8 +2,11 @@ package main.Advent2023.Day05;
 
 import java.util.*;
 
+import static main.Advent2023.Day05.FoodProduction.seeds;
+
 public class SourceToDestination {
     private final Map<Long, List<Long>> sourceToDestination = new HashMap<>();
+
 
     public SourceToDestination() {
 
@@ -40,6 +43,10 @@ public class SourceToDestination {
             }
             increment++;
         }
+    }
+
+    private long getSeedRange(long source) {
+        return seeds.get(source).getEndingRange();
     }
 
     public Map<Long, List<Long>> getSourceToDestination() {
